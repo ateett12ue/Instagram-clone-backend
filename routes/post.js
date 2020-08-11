@@ -56,7 +56,8 @@ router.put("/like", requireLogin, (req, res) => {
     {
       new: true,
     }
-  ) .populate("comments.postedBy", "_id name")
+  )
+    .populate("comments.postedBy", "_id name")
     .populate("postedBy", "_id name")
     .exec((err, result) => {
       if (err) {
@@ -76,7 +77,8 @@ router.put("/unlike", requireLogin, (req, res) => {
     {
       new: true,
     }
-  ) .populate("comments.postedBy", "_id name")
+  )
+    .populate("comments.postedBy", "_id name")
     .populate("postedBy", "_id name")
     .exec((err, result) => {
       if (err) {
@@ -113,21 +115,45 @@ router.put("/comment", requireLogin, (req, res) => {
     });
 });
 
-router.delete('/deletepost/:postId',requireLogin, (req,res)=>{
-    Post.findOne({_id:req.params.postId})
-    .populate("postedBy","_id")
-    .exec((err, post)=>{
-      if(err || !post){
-        return res.status(422).json({error:err})
+router.delete("/deletepost/:postId", requireLogin, (req, res) => {
+  Post.findOne({ _id: req.params.postId })
+    .populate("postedBy", "_id")
+    .exec((err, post) => {
+      if (err || !post) {
+        return res.status(422).json({ error: err });
       }
-      if(String(post.postedBy._id) == String(req.user._id)){
-        post.remove().then(result=>{
-          res.json(result)
-        }).catch(err=>{
-          console.log(err)
-        })
+      if (String(post.postedBy._id) == String(req.user._id)) {
+        post
+          .remove()
+          .then((result) => {
+            res.json(result);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       }
-    })
-})
+    });
+});
+
+router.put("/deleteComment", requireLogin, (req, res) => {
+  Post.findByIdAndUpdate(
+    req.body.postId,
+    {
+      $pull: { comments: { _id: req.body.commentId } },
+    },
+    {
+      new: true,
+    }
+  )
+    .populate("comments.postedBy", "_id name")
+    .populate("postedBy", "_id name")
+    .exec((err, result) => {
+      if (err) {
+        return res.status(422).json({ error: err });
+      } else {
+        res.json(result);
+      }
+    });
+});
 
 module.exports = router;
