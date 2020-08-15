@@ -15,6 +15,17 @@ router.get("/allpost", requireLogin, (req, res) => {
       console.log(err);
     });
 });
+router.get("/getsubpost", requireLogin, (req, res) => {
+  Post.find({postedBy:{$in: req.user.following}})
+    .populate("postedBy", "_id name")
+    .populate("comments.postedBy", "_id name")
+    .then((post) => {
+      res.json({ post });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
 
 router.post("/createpost", requireLogin, (req, res) => {
   const { title, body, pic } = req.body;
@@ -155,5 +166,7 @@ router.put("/deleteComment", requireLogin, (req, res) => {
       }
     });
 });
+
+
 
 module.exports = router;

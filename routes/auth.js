@@ -52,8 +52,8 @@ router.post('/signin', (req,res)=>{
         brcypt.compare(password, savedUser.password).then(doMatch=>{
             if(doMatch){
                 const token = jwt.sign({_id:savedUser._id}, JWT_SECRET);
-                const {id, name, email} = savedUser;
-                res.json({token, user:{id, name, email}});
+                const {id, name, email, followers, following} = savedUser;
+                res.json({token, user:{id, name, email,followers, following}});
             }
             else{
                 return res.status(422).json({error: "Invalid Email or Password"}) 
