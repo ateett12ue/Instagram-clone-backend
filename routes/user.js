@@ -42,11 +42,14 @@ router.put("/follow", requireLogin, (req, res) => {
         {
           new: true,
         }
-      ).select("-password").then(result=>{
-        res.json(result)
-      }).catch(err=>{
-        return res.status(422).json({error:err})
-      });
+      )
+        .select("-password")
+        .then((result) => {
+          res.json(result);
+        })
+        .catch((err) => {
+          return res.status(422).json({ error: err });
+        });
     }
   );
 });
@@ -70,11 +73,28 @@ router.put("/unfollow", requireLogin, (req, res) => {
         {
           new: true,
         }
-      ).select("-password").then(result=>{
-        res.json(result)
-      }).catch(err=>{
-        return res.status(422).json({error:err})
-      });
+      )
+        .select("-password")
+        .then((result) => {
+          res.json(result);
+        })
+        .catch((err) => {
+          return res.status(422).json({ error: err });
+        });
+    }
+  );
+});
+
+router.put("/updatepic", requireLogin,(req, res) => {
+  User.findByIdAndUpdate(
+    req.user._id,
+    { $set: { pic: req.body.pic } },
+    { new: true },
+    (err, res) => {
+      if (err) {
+        return res.status(422).json({ error: "pic not added" });
+      }
+      res.json(result);
     }
   );
 });
